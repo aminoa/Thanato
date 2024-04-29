@@ -82,6 +82,8 @@ bool g_is_colliding_bottom = false;
 Entity* text_texture;
 Entity* g_state_text;
 
+bool g_in_text_state = false;
+
 // ––––– GENERAL FUNCTIONS ––––– //
 void switch_to_scene(Scene *scene)
 {    
@@ -197,10 +199,10 @@ void process_input()
 		g_current_scene->m_state.player->m_speed = 1.5f;
     }
 
-    if (glm::length(g_current_scene->m_state.player->m_movement) > 1.0f)
-    {
-        g_current_scene->m_state.player->m_movement = glm::normalize(g_current_scene->m_state.player->m_movement);
-    }
+    //if (glm::length(g_current_scene->m_state.player->m_movement) > 1.0f)
+    //{
+    //    g_current_scene->m_state.player->m_movement = glm::normalize(g_current_scene->m_state.player->m_movement);
+    //}
 }
 
 void update()
@@ -222,6 +224,19 @@ void update()
     while (delta_time >= FIXED_TIMESTEP) {
         g_current_scene->update(FIXED_TIMESTEP);
         //g_effects->update(FIXED_TIMESTEP);
+
+        // may want to move this too entity
+        for (int i = 0; i < g_current_scene->m_number_of_interactables; i++)
+        {
+            if (g_current_scene->m_state.player->check_collision(&g_current_scene->m_state.interactables[i]) && key_state[SDL_SCANCODE_Z])
+            {
+                std::cout << "Interaction occurs" << std::endl;
+                g_in_text_state = true;
+                //g_in_text_state = false;
+                // get text drawing to show at the same position on the screen..
+            }
+        }
+
         g_is_colliding_bottom = g_current_scene->m_state.player->m_collided_bottom;
         delta_time -= FIXED_TIMESTEP;
     }
@@ -238,6 +253,7 @@ void update()
         g_view_matrix = glm::translate(g_view_matrix, glm::vec3(-5, 3.75, 0));
     }
 
+    // Need to make this level by level
     //if (g_current_scene == g_levelOne && g_current_scene->m_state.player->get_position().y < -10.0f) switch_to_scene(g_levelOne);
     //g_view_matrix = glm::translate(g_view_matrix, g_effects->m_view_offset);
 }
@@ -248,7 +264,17 @@ void render()
     glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(g_shader_program.get_program_id());
+
     g_current_scene->render(&g_shader_program);
+    
+    if (g_in_text_state)
+    {
+        glm::vec3 text_position = glm::vec3(-g_view_matrix[3].x - 5.0f, -1.0, 0);
+		//Utility::draw_text(&g_shader_program, g_state_text->m_texture_id, "Some interaction has occured", 0.5f, 0.0f, text_position); 
+		Utility::draw_text(&g_shader_program, g_state_text->m_texture_id, "Some interaction has occured", 0.5f, 0.0f, text_position);
+		//draw the text such that it stays in the same relative position on the screen
+        //Utility::draw_text(&g_shader_program, g_state_text->m_texture_id, )
+    }
     
     SDL_GL_SwapWindow(g_display_window);
 }
@@ -256,7 +282,6 @@ void render()
 void shutdown()
 {    
     SDL_Quit();
-    
     delete g_levelOne;
     //delete g_effects;
 }

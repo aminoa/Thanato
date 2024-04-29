@@ -48,7 +48,7 @@ void Effects::start(EffectType effect_type, float effect_speed)
         case FADEOUT: m_alpha     = 0.0f;  break;
         case GROW:    m_size      = 0.0f;  break;
         case SHRINK:  m_size      = 10.0f; break;
-        case SHAKE:   m_time_left = 1.0f;  break;
+        case SHAKE:   m_time_left = 1.0f;  break;    
     }
 }
 

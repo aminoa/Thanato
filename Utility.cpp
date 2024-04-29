@@ -36,10 +36,10 @@ GLuint Utility::load_texture(const char* filepath) {
     
     // STEP 5: Releasing our file from memory and returning our texture id
     stbi_image_free(image);
-    
     return texture_id;
 }
 
+// TODO: refactor this to render above the screen (such that it doesn't move with the other text)
 void Utility::draw_text(ShaderProgram *program, GLuint font_texture_id, std::string text, float screen_size, float spacing, glm::vec3 position)
 {
     // Scale the size of the fontbank in the UV-plane
@@ -101,4 +101,3 @@ void Utility::draw_text(ShaderProgram *program, GLuint font_texture_id, std::str
     glDisableVertexAttribArray(program->get_position_attribute());
     glDisableVertexAttribArray(program->get_tex_coordinate_attribute());
 }
-

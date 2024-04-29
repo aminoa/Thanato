@@ -79,10 +79,6 @@ void Entity::ai_activate(Entity *player)
             ai_walker();
             break;
             
-        case GUARD:
-            ai_guard(player);
-            break;
-            
         default:
             break;
     }
@@ -91,29 +87,6 @@ void Entity::ai_activate(Entity *player)
 void Entity::ai_walker()
 {
     m_movement = glm::vec3(-1.0f, 0.0f, 0.0f);
-}
-
-void Entity::ai_guard(Entity *player)
-{
-    switch (m_ai_state) {
-        case IDLE:
-            if (glm::distance(m_position, player->get_position()) < 3.0f) m_ai_state = WALKING;
-            break;
-            
-        case WALKING:
-            if (m_position.x > player->get_position().x) {
-                m_movement = glm::vec3(-1.0f, 0.0f, 0.0f);
-            } else {
-                m_movement = glm::vec3(1.0f, 0.0f, 0.0f);
-            }
-            break;
-            
-        case ATTACKING:
-            break;
-            
-        default:
-            break;
-    }
 }
 
 void Entity::update(float delta_time, Entity *player, Entity *objects, int object_count, Map *map)
@@ -149,18 +122,6 @@ void Entity::update(float delta_time, Entity *player, Entity *objects, int objec
     check_collision_y(map);
     check_collision_x(objects, object_count);
     check_collision_x(map);
-
- //   if (m_collided_bottom) {
- //       m_position.y = std::max(0.0f, m_velocity.y);
- //   }
- //   else if (m_collided_top)
- //   {
-	//	m_position.y = std::min(0.0f, m_velocity.y);
-	//}
- //   else {
-	//	m_position.y += m_movement.y * m_speed * delta_time;
- //   }
- //   
 
     m_position.x += m_velocity.x * m_speed * delta_time;
     m_position.y += m_velocity.y * m_speed * delta_time;
@@ -297,7 +258,8 @@ void Entity::render(ShaderProgram *program)
     
     program->set_model_matrix(m_model_matrix);
     
-    if (m_animation_indices != NULL)
+    // TODO: remove patch for only player animation
+    if (m_animation_indices != NULL && m_entity_type == PLAYER)
     {
         draw_sprite_from_texture_atlas(program, m_texture_id, m_animation_indices[m_animation_index]);
         return;

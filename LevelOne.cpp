@@ -38,12 +38,14 @@ void LevelOne::initialise()
     GLuint map_texture_id = Utility::load_texture("assets/tilemap.png");
     m_state.map = new Map(LEVEL_WIDTH, LEVEL_HEIGHT, LEVELONE_DATA, map_texture_id, 1.0f, 12, 11);
     glClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_OPACITY);
+
+    // TODO: refactor entity initialization
     // Existing
     m_state.player = new Entity();
     m_state.player->set_entity_type(PLAYER);
     m_state.player->set_position(m_player_start_position);
     m_state.player->set_movement(glm::vec3(0.0f));
-    m_state.player->m_speed = 2.5f;
+    //m_state.player->m_speed = 0.0f;
     m_state.player->set_acceleration(glm::vec3(0.0f, -9.81f, 0.0f));
     m_state.player->m_texture_id = Utility::load_texture("assets/taekshi.png");
     
@@ -62,6 +64,13 @@ void LevelOne::initialise()
     m_state.player->set_height(0.4f);
     m_state.player->set_width(0.4f);
 
+    // Interactable Object
+    m_state.interactables = new Entity[m_number_of_interactables];
+    m_state.interactables[0].set_entity_type(INTERACTABLE);
+    m_state.interactables[0].m_texture_id = Utility::load_texture("assets/sonic.png");
+    m_state.interactables[0].set_position(glm::vec3(3.0f, -2.0f, 0.0f));
+    //m_state.interactables[0].set_acceleration(glm::vec3(0.0f, -9.81f, 0.0f));
+
     // Background
     glClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_OPACITY);
     
@@ -76,13 +85,16 @@ void LevelOne::initialise()
 void LevelOne::update(float delta_time)
 {
     m_state.player->update(delta_time, m_state.player, NULL, 0, m_state.map);
-    
-    if (m_state.player->get_position().y < -10.0f) m_state.next_scene_id = 1;
+    for (int i = 0; i < m_number_of_interactables; ++i) 
+    {
+		m_state.interactables[i].update(delta_time, m_state.player, m_state.interactables, m_number_of_interactables, m_state.map);
+    }
 }
 
 void LevelOne::render(ShaderProgram *program)
 {
     m_state.map->render(program);
     m_state.player->render(program);
+    m_state.interactables->render(program);
     //m_state.enemies->render(program);
 }

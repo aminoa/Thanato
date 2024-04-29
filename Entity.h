@@ -1,7 +1,7 @@
 #pragma once
 #include "Map.h"
 
-enum EntityType { PLATFORM, PLAYER, ENEMY  };
+enum EntityType { PLATFORM, PLAYER, ENEMY, INTERACTABLE, LOADING_ZONE };
 enum AIType     { WALKER, GUARD            };
 enum AIState    { WALKING, IDLE, ATTACKING };
 

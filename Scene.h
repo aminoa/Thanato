@@ -21,7 +21,8 @@ struct GameState
     Map *map;
     Entity *player;
     Entity *enemies;
-    Entity* text;
+    Entity *text;
+    Entity *interactables;
     
     Mix_Music *bgm;
     Mix_Chunk *jump_sfx;
@@ -32,6 +33,7 @@ struct GameState
 class Scene {
 public:
     int m_number_of_enemies = 0;
+    int m_number_of_interactables = 1;
     glm::vec3 m_player_start_position = glm::vec3(2.0f, -1.0f, 0.0f);
     int level_number = 1;
 
