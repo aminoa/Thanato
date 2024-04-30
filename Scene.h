@@ -37,6 +37,10 @@ public:
     glm::vec3 m_player_start_position = glm::vec3(2.0f, -1.0f, 0.0f);
     int level_number = 1;
 
+    int LEVEL_WIDTH;
+    int LEVEL_HEIGHT;
+    int LEVEL_LEFT_EDGE;
+
     GameState m_state;
     
     virtual void initialise() = 0;
@@ -44,4 +48,7 @@ public:
     virtual void render(ShaderProgram *program) = 0;
     
     GameState const get_state() const { return m_state; }
+    
+    void player_initialize(Entity* player);
+
 };

@@ -8,14 +8,13 @@
 * Academic Misconduct.
 **/
 
+enum LevelIndex { TEST_LEVEL, HOME };
+
 #define u8 Uint8
 
 #define GL_SILENCE_DEPRECATION
 #define GL_GLEXT_PROTOTYPES 1
 #define FIXED_TIMESTEP 0.0166666f
-#define LEVEL1_WIDTH 14
-#define LEVEL1_HEIGHT 8
-#define LEVEL1_LEFT_EDGE 5.0f
 
 #ifdef _WINDOWS
 #include <GL/glew.h>
@@ -37,13 +36,16 @@
 #include "Effects.h"
 
 // Levels
-#include "LevelOne.h"
+#include "TestLevel.h"
+#include "Home.h"
 
-const char FONT_FILEPATH[] = "assets/font1.png";
+const char FONT_FILEPATH[] = "assets/all_8x8.png";
+const char TEXTBOX_FILEPATH[] = "assets/textbox.png";
 
 // ––––– CONSTANTS ––––– //
-const int WINDOW_WIDTH  = 640,
-          WINDOW_HEIGHT = 480;
+const int WINDOW_SCALE_FACTOR = 1; //change to 2 for the release
+const int WINDOW_WIDTH  = 640 * WINDOW_SCALE_FACTOR,
+          WINDOW_HEIGHT = 480 * WINDOW_SCALE_FACTOR;
 
 const float BG_RED     = 0.0f,
             BG_BLUE    = 0.0f,
@@ -59,29 +61,29 @@ const char V_SHADER_PATH[] = "shaders/vertex_textured.glsl",
            F_SHADER_PATH[] = "shaders/fragment_textured.glsl";
 
 const float MILLISECONDS_IN_SECOND = 1000.0;
+const float CAMERA_SCALE = 0.5f;
 
-// ––––– GLOBAL VARIABLES ––––– //
-Scene  *g_current_scene;
-LevelOne *g_levelOne;
-
-//Effects *g_effects;
-Scene   *g_levels[4];
-
+// Rendering
 SDL_Window* g_display_window;
 bool g_game_is_running = true;
-
 ShaderProgram g_shader_program;
 glm::mat4 g_view_matrix, g_projection_matrix;
 
+// Scenes
+Scene* g_current_scene;
+Scene* g_levels[10];
+//TestLevel* g_levelOne;
+
+//Effects *g_effects;
+
 float g_previous_ticks = 0.0f;
 float g_accumulator = 0.0f;
-
 bool g_is_colliding_bottom = false;
 
 //text
-Entity* text_texture;
+Entity* g_text_texture;
 Entity* g_state_text;
-
+//Entity* g_textbox;
 bool g_in_text_state = false;
 
 // ––––– GENERAL FUNCTIONS ––––– //
@@ -124,11 +126,11 @@ void initialise()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    g_levelOne = new LevelOne();
-    g_levels[0] = g_levelOne;
+    // Level Setup 
+    g_levels[LevelIndex::TEST_LEVEL] = new TestLevel();
+    g_levels[LevelIndex::HOME] = new Home();
     
-    // Start at Level One
-    switch_to_scene(g_levels[0]);
+    switch_to_scene(g_levels[LevelIndex::HOME]);
     
     //g_effects = new Effects(g_projection_matrix, g_view_matrix);
     // Special effect added
@@ -137,7 +139,9 @@ void initialise()
     //text
 	g_state_text = new Entity();
 	g_state_text->m_texture_id = Utility::load_texture(FONT_FILEPATH);
-	g_state_text->set_position(glm::vec3(0.0f, 1.0f, 0.0f));
+	//g_state_text->set_position(glm::vec3(0.0f, 1.0f, 0.0f));
+    //g_textbox = new Entity();
+    //g_textbox->m_texture_id = Utility::load_texture(TEXTBOX_FILEPATH);
 }
 
 void process_input()
@@ -154,6 +158,23 @@ void process_input()
             case SDL_WINDOWEVENT_CLOSE:
                 g_game_is_running = false;
                 break;
+            case SDL_KEYDOWN:
+                switch (event.key.keysym.sym) {
+					case SDLK_ESCAPE:
+						g_game_is_running = false;
+						break;
+                    // Fullscreen
+                    case SDLK_F11:
+                        if (SDL_GetWindowFlags(g_display_window) & SDL_WINDOW_FULLSCREEN)
+                        {
+							SDL_SetWindowFullscreen(g_display_window, 0);
+						}
+                        else
+                        {
+							SDL_SetWindowFullscreen(g_display_window, SDL_WINDOW_FULLSCREEN);
+						}
+						break;
+                }
 
             default:
                 break;
@@ -245,8 +266,10 @@ void update()
 
     // Prevent the camera from showing anything outside of the "edge" of the level
     g_view_matrix = glm::mat4(1.0f);
+    g_view_matrix = glm::scale(g_view_matrix, glm::vec3(CAMERA_SCALE, CAMERA_SCALE, 1.0f));
 
-    if (g_current_scene->m_state.player->get_position().x > LEVEL1_LEFT_EDGE) {
+    // TODO: need more checks to keep camera in bounds 
+    if (g_current_scene->m_state.player->get_position().x > g_current_scene->LEVEL_LEFT_EDGE) {
         g_view_matrix = glm::translate(g_view_matrix, glm::vec3(-g_current_scene->m_state.player->get_position().x, 3.75, 0));
     }
     else {
@@ -269,11 +292,10 @@ void render()
     
     if (g_in_text_state)
     {
-        glm::vec3 text_position = glm::vec3(-g_view_matrix[3].x - 5.0f, -1.0, 0);
-		//Utility::draw_text(&g_shader_program, g_state_text->m_texture_id, "Some interaction has occured", 0.5f, 0.0f, text_position); 
-		Utility::draw_text(&g_shader_program, g_state_text->m_texture_id, "Some interaction has occured", 0.5f, 0.0f, text_position);
-		//draw the text such that it stays in the same relative position on the screen
-        //Utility::draw_text(&g_shader_program, g_state_text->m_texture_id, )
+        // TODO: rectangle over text
+        //auto temp_view_matrix = glm::scale(g_view_matrix, glm::vec3(0.1f, 0.1f, 0.1f));
+        glm::vec3 text_position = glm::vec3(-g_view_matrix[3].x * (1 / CAMERA_SCALE) - 3, -8.0, 0);
+		Utility::draw_text(&g_shader_program, g_state_text->m_texture_id, "abcdefghijkl", 0.5f, 0.0f, text_position);
     }
     
     SDL_GL_SwapWindow(g_display_window);
@@ -282,7 +304,7 @@ void render()
 void shutdown()
 {    
     SDL_Quit();
-    delete g_levelOne;
+    for (Scene* level : g_levels) { delete level; }
     //delete g_effects;
 }
 

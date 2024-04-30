@@ -3,7 +3,7 @@
 #define NUMBER_OF_TEXTURES 1 // to be generated, that is
 #define LEVEL_OF_DETAIL 0    // base image level; Level n is the nth mipmap reduction image
 #define TEXTURE_BORDER 0     // this value MUST be zero
-#define FONTBANK_SIZE 16
+#define FONTBANK_SIZE 10
 
 #include "Utility.h"
 #include <SDL_image.h>
@@ -56,7 +56,7 @@ void Utility::draw_text(ShaderProgram *program, GLuint font_texture_id, std::str
     for (int i = 0; i < text.size(); i++) {
         // 1. Get their index in the spritesheet, as well as their offset (i.e. their position
         //    relative to the whole sentence)
-        int spritesheet_index = (int) text[i];  // ascii value of character
+        int spritesheet_index = (int) (text[i] - 32) % (FONTBANK_SIZE * FONTBANK_SIZE);  // ascii value of character
         float offset = (screen_size + spacing) * i;
         
         // 2. Using the spritesheet index, we can calculate our U- and V-coordinates
