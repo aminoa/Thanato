@@ -46,12 +46,11 @@ const char TEXTBOX_FILEPATH[] = "assets/textbox.png";
 const int WINDOW_SCALE_FACTOR = 1; //change to 2 for the release
 const int WINDOW_WIDTH  = 640 * WINDOW_SCALE_FACTOR,
           WINDOW_HEIGHT = 480 * WINDOW_SCALE_FACTOR;
-
+//
 const float BG_RED     = 0.0f,
             BG_BLUE    = 0.0f,
-            BG_GREEN   = 1.0f,
+            BG_GREEN   = 0.0f,
             BG_OPACITY = 0.0f;
-
 const int VIEWPORT_X = 0,
           VIEWPORT_Y = 0,
           VIEWPORT_WIDTH  = WINDOW_WIDTH,
@@ -61,7 +60,7 @@ const char V_SHADER_PATH[] = "shaders/vertex_textured.glsl",
            F_SHADER_PATH[] = "shaders/fragment_textured.glsl";
 
 const float MILLISECONDS_IN_SECOND = 1000.0;
-const float CAMERA_SCALE = 0.5f;
+const float CAMERA_SCALE = 0.75f;
 
 // Rendering
 SDL_Window* g_display_window;
@@ -183,23 +182,25 @@ void process_input()
 
     const u8* key_state = SDL_GetKeyboardState(NULL);
 
-    if (key_state[SDL_SCANCODE_LEFT])
+    // TOOD: check controller
+
+    if (key_state[SDL_SCANCODE_LEFT] || key_state[SDL_CONTROLLER_BUTTON_DPAD_LEFT])
     {
         g_current_scene->m_state.player->set_velocity(glm::vec3(-1.0f, 0.0f, 0.0f));
         g_current_scene->m_state.player->m_animation_indices = g_current_scene->m_state.player->m_walking[g_current_scene->m_state.player->LEFT];
     }
-    else if (key_state[SDL_SCANCODE_RIGHT])
+    else if (key_state[SDL_SCANCODE_RIGHT] || key_state[SDL_CONTROLLER_BUTTON_DPAD_RIGHT])
     {
         g_current_scene->m_state.player->set_velocity(glm::vec3(1.0f, 0.0f, 0.0f));
         g_current_scene->m_state.player->m_animation_indices = g_current_scene->m_state.player->m_walking[g_current_scene->m_state.player->RIGHT];
     }
-    else if (key_state[SDL_SCANCODE_UP])
+    else if (key_state[SDL_SCANCODE_UP] || key_state[SDL_CONTROLLER_BUTTON_DPAD_UP])
     {
 		//g_current_scene->m_state.player->m_movement.y = 1.0f;
         g_current_scene->m_state.player->set_velocity(glm::vec3(0.0f, 1.0f, 0.0f));
         g_current_scene->m_state.player->m_animation_indices = g_current_scene->m_state.player->m_walking[g_current_scene->m_state.player->UP];
 	}
-    else if (key_state[SDL_SCANCODE_DOWN])
+    else if (key_state[SDL_SCANCODE_DOWN] || key_state[SDL_CONTROLLER_BUTTON_DPAD_UP])
     {
 		//g_current_scene->m_state.player->m_movement.y = -1.0f;
         g_current_scene->m_state.player->set_velocity(glm::vec3(0.0f, -1.0f, 0.0f));
@@ -213,12 +214,16 @@ void process_input()
     // Running
     if (key_state[SDL_SCANCODE_X]) 
     {
-        g_current_scene->m_state.player->m_speed = 3.0f;
+        g_current_scene->m_state.player->m_speed = 4.0f;
 	}
     else
     {
-		g_current_scene->m_state.player->m_speed = 1.5f;
+		g_current_scene->m_state.player->m_speed = 2.0f;
     }
+
+    // Debug Map Switch
+    if (key_state[SDL_SCANCODE_D] && key_state[SDL_SCANCODE_1]) switch_to_scene(g_levels[LevelIndex::TEST_LEVEL]);
+    if (key_state[SDL_SCANCODE_D] && key_state[SDL_SCANCODE_2]) switch_to_scene(g_levels[LevelIndex::HOME]);
 
     //if (glm::length(g_current_scene->m_state.player->m_movement) > 1.0f)
     //{
@@ -294,7 +299,7 @@ void render()
     {
         // TODO: rectangle over text
         //auto temp_view_matrix = glm::scale(g_view_matrix, glm::vec3(0.1f, 0.1f, 0.1f));
-        glm::vec3 text_position = glm::vec3(-g_view_matrix[3].x * (1 / CAMERA_SCALE) - 3, -8.0, 0);
+        glm::vec3 text_position = glm::vec3(-g_view_matrix[3].x * (1 / CAMERA_SCALE) - 3, -4.0, 0);
 		Utility::draw_text(&g_shader_program, g_state_text->m_texture_id, "abcdefghijkl", 0.5f, 0.0f, text_position);
     }
     

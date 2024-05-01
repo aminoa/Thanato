@@ -17,6 +17,7 @@ class Map {
 private:
     int m_width;
     int m_height;
+    bool m_bg_map;
     
     unsigned int *m_level_data;
     GLuint        m_texture_id;
@@ -32,8 +33,8 @@ private:
     
 public:
     Map(int width, int height, unsigned int *level_data, GLuint texture_id, float tile_size, int
-    tile_count_x, int tile_count_y);
-    
+    tile_count_x, int tile_count_y, bool bg_map = true);
+
     void build();
     void render(ShaderProgram *program);
     bool is_solid(glm::vec3 position, float *penetration_x, float *penetration_y);

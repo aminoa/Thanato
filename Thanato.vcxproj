@@ -145,11 +145,13 @@
     <ClInclude Include="Effects.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Home.h" />
+    <ClInclude Include="json.hpp" />
     <ClInclude Include="TestLevel.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="tileson.h" />
     <ClInclude Include="Utility.h" />
   </ItemGroup>
   <ItemGroup>

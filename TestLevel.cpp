@@ -36,7 +36,7 @@ void TestLevel::initialise()
     m_number_of_enemies = ENEMY_COUNT;
     
     GLuint map_texture_id = Utility::load_texture("assets/tilemap.png");
-    m_state.map = new Map(LEVEL_WIDTH, LEVEL_HEIGHT, LEVELONE_DATA, map_texture_id, 1.0f, 12, 11);
+    m_state.map = new Map(LEVEL_WIDTH, LEVEL_HEIGHT, LEVELONE_DATA, map_texture_id, 1.0f, 12, 11, true);
     glClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_OPACITY);
 
     m_state.player = new Entity();

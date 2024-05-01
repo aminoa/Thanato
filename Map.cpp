@@ -1,6 +1,6 @@
 #include "Map.h"
 
-Map::Map(int width, int height, unsigned int *level_data, GLuint texture_id, float tile_size, int tile_count_x, int tile_count_y)
+Map::Map(int width, int height, unsigned int *level_data, GLuint texture_id, float tile_size, int tile_count_x, int tile_count_y, bool bg_map)
 {
     m_width = width;
     m_height = height;
@@ -11,6 +11,8 @@ Map::Map(int width, int height, unsigned int *level_data, GLuint texture_id, flo
     m_tile_size = tile_size;
     m_tile_count_x = tile_count_x;
     m_tile_count_y = tile_count_y;
+
+    m_bg_map = bg_map;
     
     build();
 }
@@ -59,6 +61,7 @@ void Map::build()
     m_bottom_bound = -(m_tile_size * m_height) + (m_tile_size / 2);
 }
 
+
 void Map::render(ShaderProgram *program)
 {
     glm::mat4 model_matrix = glm::mat4(1.0f);
@@ -80,6 +83,8 @@ void Map::render(ShaderProgram *program)
 
 bool Map::is_solid(glm::vec3 position, float *penetration_x, float *penetration_y)
 {
+    if (m_bg_map) return false; // Background maps are not solid 
+
     *penetration_x = 0;
     *penetration_y = 0;
     
@@ -93,7 +98,9 @@ bool Map::is_solid(glm::vec3 position, float *penetration_x, float *penetration_
     if (tile_y < 0 || tile_y >= m_height) return false;
     
     int tile = m_level_data[tile_y * m_width + tile_x];
-    if (tile == 0) return false;
+
+    // TODO - set up corresponding collision map for the tile data 
+    if (tile == -1) return false;
     
     float tile_center_x = (tile_x * m_tile_size);
     float tile_center_y = -(tile_y * m_tile_size);

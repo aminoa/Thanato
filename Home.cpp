@@ -1,22 +1,39 @@
 #include "Home.h"
 #include "Utility.h"
 
-const float BG_RED = 0.4f,
-BG_BLUE = 0.4f,
-BG_GREEN = 1.0f,
+const float BG_RED = 0.0f,
+BG_BLUE = 0.0f,
+BG_GREEN = 0.0f,
 BG_OPACITY = 0.0f;
 
-unsigned int HOME_DATA[] =
+unsigned int BACKGROUND_MAP_HOME_DATA[] =
 {
-    48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    48, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    48, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    48, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+	16,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,18,
+	142,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,144,
+	142,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,144,
+	142,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,144,
+	142,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,144,
+	142,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,144,
+	142,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,144,
+	142,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,144,
+	142,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,5458,144,
+	273,273,273,273,273,273,273,273,273,-1,-1,273,273,273,273,273,273,273,273,273 
 };
+
+unsigned int OBJECT_MAP_HOME_DATA[] =
+{
+	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+	-1,50,82,51,52,-1,-1,-1,-1,41,41,-1,-1,-1,11,-1,144,-1,14,-1,
+	-1,66,67,67,67,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,30,-1,
+	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,46,-1,
+	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+	-1,161,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,96,97,98,99,-1,
+	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,112,113,114,115,-1,
+	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+};
+
 Home::~Home()
 {
     delete [] m_state.enemies;
@@ -28,15 +45,26 @@ Home::~Home()
 
 void Home::initialise()
 {
-    LEVEL_WIDTH = 14.0f;
-    LEVEL_HEIGHT = 8.0f;
+    LEVEL_WIDTH = 20.0f;
+    LEVEL_HEIGHT = 10.0f;
     LEVEL_LEFT_EDGE = 5.0f;
+
+    int TILESET_WIDTH = 4050 / 32;
+	int TILESET_HEIGHT = 3456 / 32;
 
     m_state.next_scene_id = -1;
     m_number_of_enemies = ENEMY_COUNT;
-    
-    GLuint map_texture_id = Utility::load_texture("assets/tilemap.png");
-    m_state.map = new Map(LEVEL_WIDTH, LEVEL_HEIGHT, HOME_DATA, map_texture_id, 1.0f, 12, 11);
+
+    // Every scene will have two maps, a background map and an object map - map rendering won't need to use tile ids, 
+    // Background map will have no collsion, object map will have collision, will render background map, then object map, specify type in initialization or something
+    // TODO: I need to think of a way to get interactions working with the object map
+
+    GLuint map_texture_id = Utility::load_texture("assets/tilesets/indoor_house.png");
+    GLuint object_map_texture_id = Utility::load_texture("assets/tilesets/objects_indoor_house.png"); 
+
+    m_state.map = new Map(LEVEL_WIDTH, LEVEL_HEIGHT, BACKGROUND_MAP_HOME_DATA, map_texture_id, 1.0f, TILESET_WIDTH, TILESET_HEIGHT);
+    m_state.object_map = new Map(LEVEL_WIDTH, LEVEL_HEIGHT, OBJECT_MAP_HOME_DATA, object_map_texture_id, 1.0f, 512 / 32, 512 / 32);
+
     glClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_OPACITY);
 
     m_state.player = new Entity();
@@ -47,7 +75,7 @@ void Home::initialise()
     m_state.interactables[0].set_entity_type(INTERACTABLE);
     m_state.interactables[0].m_texture_id = Utility::load_texture("assets/sonic.png");
     m_state.interactables[0].set_position(glm::vec3(3.0f, -2.0f, 0.0f));
-    //m_state.interactables[0].set_acceleration(glm::vec3(0.0f, -9.81f, 0.0f));
+    m_state.interactables[0].set_acceleration(glm::vec3(0.0f, -9.81f, 0.0f));
 
     // Background
     glClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_OPACITY);
@@ -72,6 +100,7 @@ void Home::update(float delta_time)
 void Home::render(ShaderProgram *program)
 {
     m_state.map->render(program);
+    m_state.object_map->render(program);
     m_state.player->render(program);
     m_state.interactables->render(program);
     //m_state.enemies->render(program);
