@@ -44,7 +44,7 @@ const char FONT_FILEPATH[] = "assets/all_8x8.png";
 const char TEXTBOX_FILEPATH[] = "assets/textbox.png";
 
 // ––––– CONSTANTS ––––– //
-const int WINDOW_SCALE_FACTOR = 1; //change to 2 for the release
+const int WINDOW_SCALE_FACTOR = 1; // TODO: change to 2 for the release
 const int WINDOW_WIDTH  = 640 * WINDOW_SCALE_FACTOR,
           WINDOW_HEIGHT = 480 * WINDOW_SCALE_FACTOR;
 //
@@ -141,6 +141,7 @@ void initialise()
 	//g_state_text->m_texture_id = Utility::load_texture(FONT_FILEPATH);
 	//g_state_text->set_position(glm::vec3(0.0f, 1.0f, 0.0f));
     g_textbox = new TextBox();
+    g_textbox->activate();
 }
 
 void process_input()
@@ -231,6 +232,25 @@ void process_input()
 
 }
 
+void render()
+{
+    g_shader_program.set_view_matrix(g_view_matrix);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glUseProgram(g_shader_program.get_program_id());
+
+    g_current_scene->render(&g_shader_program);
+
+    if (g_current_scene->m_state.player->m_locked)
+    {
+		g_textbox->render_textbox(&g_shader_program);
+		glm::vec3 text_position = glm::vec3(-g_view_matrix[3].x * (1 / 0.5) - 8, -7, 0);
+		g_textbox->render_text(&g_shader_program, text_position);
+	}
+    
+    SDL_GL_SwapWindow(g_display_window);
+}
+
 void update()
 {
     float ticks = (float)SDL_GetTicks() / MILLISECONDS_IN_SECOND;
@@ -250,24 +270,40 @@ void update()
         g_current_scene->update(FIXED_TIMESTEP);
         //g_effects->update(FIXED_TIMESTEP);
 
-        // may want to move this to home
-        //for (int i = 0; i < g_current_scene->m_number_of_interactables; i++)
-        //{
-        //    if (g_current_scene->m_state.player->check_collision(&g_current_scene->m_state.interactables[i]) && key_state[SDL_SCANCODE_Z])
-        //    {
-        //        //g_in_text_state = false;
-        //        // get text drawing to show at the same position on the screen..
-        //    }
-        //}
-
         const u8* key_state = SDL_GetKeyboardState(NULL);
 
         if (g_current_scene->m_state.player->m_locked)
         {
-			g_textbox->update_textbox(g_view_matrix);
-            g_textbox->update_text(g_current_scene->m_state.text_buffer, 0.5f, 0.0f);
+            int MAX_CHARACTER_COUNT = 33;
+            // split text_buffer into vector of strings of max length MAX_CHARACTER_COUNT
+            std::vector<std::string> text_lines;
+            std::string text = g_current_scene->m_state.text_buffer;
+            while (text.length() > MAX_CHARACTER_COUNT)
+            {
+				std::string line = text.substr(0, MAX_CHARACTER_COUNT);
+				text_lines.push_back(line);
+				text = text.substr(MAX_CHARACTER_COUNT);
+			}
 
-            // have a waiting period before registering a z input 
+            // add remaining text to vector
+            text_lines.push_back(text);
+
+
+            while (text_lines.size() > 1)
+            {
+				// draw one line at a time, wait for z input to draw next line (have a waiting period too)
+				if (key_state[SDL_SCANCODE_Z])
+				{
+					g_current_scene->m_state.text_buffer = text_lines[0];
+					text_lines.erase(text_lines.begin());
+				}
+				g_textbox->update_textbox(g_view_matrix);
+				g_textbox->update_text(text_lines[0], 0.5f, 0.0f);
+
+                render();
+            }
+
+            g_current_scene->m_state.player->m_locked = false;
         }
 
         g_is_colliding_bottom = g_current_scene->m_state.player->m_collided_bottom;
@@ -289,30 +325,9 @@ void update()
         g_view_matrix = glm::translate(g_view_matrix, glm::vec3(-5, 3.75, 0));
     }
 
-    // Need to make this level by level
-    //if (g_current_scene == g_levelOne && g_current_scene->m_state.player->get_position().y < -10.0f) switch_to_scene(g_levelOne);
     //g_view_matrix = glm::translate(g_view_matrix, g_effects->m_view_offset);
-
 }
 
-void render()
-{
-    g_shader_program.set_view_matrix(g_view_matrix);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    glUseProgram(g_shader_program.get_program_id());
-
-    g_current_scene->render(&g_shader_program);
-
-    if (g_current_scene->m_state.player->m_locked)
-    {
-		g_textbox->render_textbox(&g_shader_program);
-		glm::vec3 text_position = glm::vec3(-g_view_matrix[3].x * (1 / 0.5) - 6, -6.5, 0);
-		g_textbox->render_text(&g_shader_program, text_position);
-	}
-    
-    SDL_GL_SwapWindow(g_display_window);
-}
 
 void shutdown()
 {    
