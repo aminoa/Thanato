@@ -1,5 +1,6 @@
 #pragma once
 #include "Map.h"
+#include <string>
 
 enum EntityType { PLATFORM, PLAYER, ENEMY, INTERACTABLE, LOADING_ZONE, TEXTBOX}; // TExtbox is unusied now
 enum AIType     { WALKER, GUARD            };
@@ -24,6 +25,8 @@ private:
     
     float m_width  = 0.8f;
     float m_height = 0.8f;
+
+    std::string dialogue;
     
 public:
     // Static attributes
@@ -56,6 +59,8 @@ public:
     bool m_collided_left   = false;
     bool m_collided_right  = false;
 
+    bool m_locked = false;
+
     // Methods
     Entity();
     ~Entity();
@@ -87,6 +92,7 @@ public:
     glm::vec3  const get_acceleration() const { return m_acceleration; };
     int        const get_width()        const { return m_width;        };
     int        const get_height()       const { return m_height;       };
+    std::string const get_dialogue()    const { return dialogue;       };
     
     void const set_entity_type(EntityType new_entity_type)  { m_entity_type  = new_entity_type;      };
     void const set_ai_type(AIType new_ai_type)              { m_ai_type      = new_ai_type;          };
@@ -97,4 +103,5 @@ public:
     void const set_acceleration(glm::vec3 new_acceleration) { m_acceleration = new_acceleration;     };
     void const set_width(float new_width)                   { m_width        = new_width;            };
     void const set_height(float new_height)                 { m_height       = new_height;           };
+    void const set_dialogue(std::string new_dialogue)       { dialogue       = new_dialogue;         };
 };

@@ -15,6 +15,7 @@
 #include "Utility.h"
 #include "Entity.h"
 #include "Map.h"
+#include "TextBox.h"
 
 struct GameState
 {
@@ -22,11 +23,12 @@ struct GameState
     Map *object_map;
     Entity *player;
     Entity *enemies;
-    Entity *text;
     Entity *interactables;
     
     Mix_Music *bgm;
     Mix_Chunk *jump_sfx;
+
+    std::string text_buffer;
 
     int next_scene_id;
 };

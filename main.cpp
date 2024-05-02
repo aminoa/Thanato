@@ -82,7 +82,7 @@ bool g_is_colliding_bottom = false;
 
 //text
 Entity* g_text_texture;
-Entity* g_state_text;
+//Entity* g_state_text;
 TextBox* g_textbox;
 bool g_in_text_state = false;
 
@@ -137,12 +137,10 @@ void initialise()
     //g_effects->start(FADEIN, 0.25f);
 
     //text
-	g_state_text = new Entity();
-	g_state_text->m_texture_id = Utility::load_texture(FONT_FILEPATH);
+	//g_state_text = new Entity();
+	//g_state_text->m_texture_id = Utility::load_texture(FONT_FILEPATH);
 	//g_state_text->set_position(glm::vec3(0.0f, 1.0f, 0.0f));
     g_textbox = new TextBox();
-    g_textbox->deactivate();
-
 }
 
 void process_input()
@@ -184,6 +182,16 @@ void process_input()
 
     const u8* key_state = SDL_GetKeyboardState(NULL);
 
+    // Debug Map Switch
+    if (key_state[SDL_SCANCODE_D] && key_state[SDL_SCANCODE_1]) switch_to_scene(g_levels[LevelIndex::TEST_LEVEL]);
+    if (key_state[SDL_SCANCODE_D] && key_state[SDL_SCANCODE_2]) switch_to_scene(g_levels[LevelIndex::HOME]);
+
+    if (g_current_scene->m_state.player->m_locked)
+    {
+        g_current_scene->m_state.player->set_velocity(glm::vec3(0.0f, 0.0f, 0.0f));
+        return;
+    }
+
     if (key_state[SDL_SCANCODE_LEFT])
     {
         g_current_scene->m_state.player->set_velocity(glm::vec3(-1.0f, 0.0f, 0.0f));
@@ -221,9 +229,6 @@ void process_input()
         g_current_scene->m_state.player->SECONDS_PER_FRAME = 4;
     }
 
-    // Debug Map Switch
-    if (key_state[SDL_SCANCODE_D] && key_state[SDL_SCANCODE_1]) switch_to_scene(g_levels[LevelIndex::TEST_LEVEL]);
-    if (key_state[SDL_SCANCODE_D] && key_state[SDL_SCANCODE_2]) switch_to_scene(g_levels[LevelIndex::HOME]);
 }
 
 void update()
@@ -240,22 +245,29 @@ void update()
         return;
     }
 
-    const u8* key_state = SDL_GetKeyboardState(NULL);
 
     while (delta_time >= FIXED_TIMESTEP) {
         g_current_scene->update(FIXED_TIMESTEP);
         //g_effects->update(FIXED_TIMESTEP);
 
-        // may want to move this too entity
-        for (int i = 0; i < g_current_scene->m_number_of_interactables; i++)
+        // may want to move this to home
+        //for (int i = 0; i < g_current_scene->m_number_of_interactables; i++)
+        //{
+        //    if (g_current_scene->m_state.player->check_collision(&g_current_scene->m_state.interactables[i]) && key_state[SDL_SCANCODE_Z])
+        //    {
+        //        //g_in_text_state = false;
+        //        // get text drawing to show at the same position on the screen..
+        //    }
+        //}
+
+        const u8* key_state = SDL_GetKeyboardState(NULL);
+
+        if (g_current_scene->m_state.player->m_locked)
         {
-            if (g_current_scene->m_state.player->check_collision(&g_current_scene->m_state.interactables[i]) && key_state[SDL_SCANCODE_Z])
-            {
-                std::cout << "Interaction occurs" << std::endl;
-                g_in_text_state = true;
-                //g_in_text_state = false;
-                // get text drawing to show at the same position on the screen..
-            }
+			g_textbox->update_textbox(g_view_matrix);
+            g_textbox->update_text(g_current_scene->m_state.text_buffer, 0.5f, 0.0f);
+
+            // have a waiting period before registering a z input 
         }
 
         g_is_colliding_bottom = g_current_scene->m_state.player->m_collided_bottom;
@@ -280,7 +292,6 @@ void update()
     // Need to make this level by level
     //if (g_current_scene == g_levelOne && g_current_scene->m_state.player->get_position().y < -10.0f) switch_to_scene(g_levelOne);
     //g_view_matrix = glm::translate(g_view_matrix, g_effects->m_view_offset);
-    g_textbox->update(g_view_matrix);
 
 }
 
@@ -292,14 +303,13 @@ void render()
     glUseProgram(g_shader_program.get_program_id());
 
     g_current_scene->render(&g_shader_program);
-    
-    if (g_in_text_state)
+
+    if (g_current_scene->m_state.player->m_locked)
     {
-        g_textbox->activate();
-		g_textbox->render(&g_shader_program);
-        glm::vec3 text_position = glm::vec3(-g_view_matrix[3].x * (1 / CAMERA_SCALE) - 6, -6.5, 0);
-		Utility::draw_text(&g_shader_program, g_state_text->m_texture_id, "abcdefghijklmnopqrstuvwxyz", 0.5f, 0.0f, text_position);
-    }
+		g_textbox->render_textbox(&g_shader_program);
+		glm::vec3 text_position = glm::vec3(-g_view_matrix[3].x * (1 / 0.5) - 6, -6.5, 0);
+		g_textbox->render_text(&g_shader_program, text_position);
+	}
     
     SDL_GL_SwapWindow(g_display_window);
 }

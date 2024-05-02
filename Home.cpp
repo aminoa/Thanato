@@ -1,5 +1,8 @@
 #include "Home.h"
 #include "Utility.h"
+#include "TextBox.h"
+
+#define u8 Uint8
 
 const float BG_RED = 0.0f,
 BG_BLUE = 0.0f,
@@ -76,9 +79,11 @@ void Home::initialise()
     m_state.interactables[0].m_texture_id = Utility::load_texture("assets/sonic.png");
     m_state.interactables[0].set_position(glm::vec3(3.0f, -2.0f, 0.0f));
     m_state.interactables[0].set_acceleration(glm::vec3(0.0f, -9.81f, 0.0f));
+    m_state.interactables[0].set_dialogue("Hello, I am Sonic the Hedgehog. I am the fastest thing alive.");
 
     // Background
     glClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_OPACITY);
+
     
     /** BGM and SFX */
     //Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
@@ -86,15 +91,27 @@ void Home::initialise()
     //Mix_PlayMusic(m_state.bgm, -1);
     //Mix_VolumeMusic(MIX_MAX_VOLUME / 2);
     //m_state.jump_sfx = Mix_LoadWAV("assets/jump.wav");
+
+    m_state.text_buffer = "";
 }
 
 void Home::update(float delta_time)
 {
     m_state.player->update(delta_time, m_state.player, NULL, 0, m_state.map);
+    const u8* key_state = SDL_GetKeyboardState(NULL);
+    
     for (int i = 0; i < m_number_of_interactables; ++i) 
     {
 		m_state.interactables[i].update(delta_time, m_state.player, m_state.interactables, m_number_of_interactables, m_state.map);
-    }
+        if (m_state.player->check_collision(&m_state.interactables[i]) && key_state[SDL_SCANCODE_Z])
+        {
+            m_state.player->m_locked = true;
+            std::cout << "Interaction occured" << std::endl;
+		    std::string dialogue = m_state.interactables[i].get_dialogue();
+            m_state.text_buffer = dialogue;
+        }
+	}
+
 }
 
 void Home::render(ShaderProgram *program)
