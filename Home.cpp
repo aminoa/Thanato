@@ -102,6 +102,7 @@ void Home::update(float delta_time)
     
     for (int i = 0; i < m_number_of_interactables; ++i) 
     {
+        while (m_state.player->m_locked) { }
 		m_state.interactables[i].update(delta_time, m_state.player, m_state.interactables, m_number_of_interactables, m_state.map);
         if (m_state.player->check_collision(&m_state.interactables[i]) && key_state[SDL_SCANCODE_Z])
         {

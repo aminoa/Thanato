@@ -39,7 +39,6 @@ GLuint Utility::load_texture(const char* filepath) {
     return texture_id;
 }
 
-// TODO: refactor this to render above the screen (such that it doesn't move with the other text)
 void Utility::draw_text(ShaderProgram *program, GLuint font_texture_id, std::string text, float screen_size, float spacing, glm::vec3 position)
 {
     // Scale the size of the fontbank in the UV-plane

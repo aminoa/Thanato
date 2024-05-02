@@ -9,7 +9,6 @@ class TextBox
 {
 public:
 	TextBox();
-	~TextBox();
 	void activate() { m_is_active = true; }
 	void deactivate() { m_is_active = false; }
 
@@ -18,7 +17,7 @@ public:
 
 	void update_textbox(glm::mat4& g_view_matrix);
 	void render_textbox(ShaderProgram* program);
-	void write_dialogue(std::string& text);
+	// will render two lines at a time, add an buffer displacement line, then when you reach that, you can deactivate the textbox
 	void update_text(std::string text, float screen_size, float spacing);
 	void render_text(ShaderProgram* program, glm::vec3 position);
 

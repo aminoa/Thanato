@@ -20,22 +20,6 @@ TextBox::TextBox()
 	m_text_buffer = "";
 }
 
-//void TextBox::write_dialogue(std::string& text, bool &m_locked)
-//{
-//	//m_text_buffer = text;
-//	while (m_locked)
-//	{
-//		m_text_buffer = text;
-//	}
-//
-//}
-
-//void update_text(std::string& text, ShaderProgram& g_shader_program, glm::mat4& g_view_matrix, float camera_scale, GLuint text_texture_id)
-//{
-//	glm::vec3 text_position = glm::vec3(-g_view_matrix[3].x * (1 / camera_scale) - 3, -4.0, 0);
-//	Utility::draw_text(&g_shader_program, text_texture_id, text, 0.5f, 0.0f, text_position);
-//}
-
 void TextBox::update_textbox(glm::mat4& g_view_matrix)
 {
 	glm::vec3 textbox_position = glm::vec3(-g_view_matrix[3].x * (1 / 0.5), -8.0f, 0);
@@ -82,7 +66,6 @@ void TextBox::render_textbox(ShaderProgram* program)
     glDisableVertexAttribArray(program->get_tex_coordinate_attribute());
 }
 
-// TODO: refactor this to render above the screen (such that it doesn't move with the other text)
 void TextBox::update_text(std::string text, float screen_size, float spacing)
 {
     // Scale the size of the fontbank in the UV-plane

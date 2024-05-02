@@ -11,10 +11,12 @@
 enum LevelIndex { TEST_LEVEL, HOME };
 
 #define u8 Uint8
+#define u32 Uint32
 
 #define GL_SILENCE_DEPRECATION
 #define GL_GLEXT_PROTOTYPES 1
 #define FIXED_TIMESTEP 0.0166666f
+#define DIALOGUE_DELAY 1500 // 1 second
 
 #ifdef _WINDOWS
 #include <GL/glew.h>
@@ -63,6 +65,8 @@ const char V_SHADER_PATH[] = "shaders/vertex_textured.glsl",
 const float MILLISECONDS_IN_SECOND = 1000.0;
 const float CAMERA_SCALE = 0.5f;
 
+GLuint g_text_texture_id = Utility::load_texture("assets/all_8x8.png");
+
 // Rendering
 SDL_Window* g_display_window;
 bool g_game_is_running = true;
@@ -79,6 +83,7 @@ Scene* g_levels[10];
 float g_previous_ticks = 0.0f;
 float g_accumulator = 0.0f;
 bool g_is_colliding_bottom = false;
+u32 g_dialogue_timer = 0;
 
 //text
 Entity* g_text_texture;
@@ -141,7 +146,7 @@ void initialise()
 	//g_state_text->m_texture_id = Utility::load_texture(FONT_FILEPATH);
 	//g_state_text->set_position(glm::vec3(0.0f, 1.0f, 0.0f));
     g_textbox = new TextBox();
-    g_textbox->activate();
+    g_textbox->deactivate();
 }
 
 void process_input()
@@ -239,9 +244,10 @@ void render()
 
     glUseProgram(g_shader_program.get_program_id());
 
+
     g_current_scene->render(&g_shader_program);
 
-    if (g_current_scene->m_state.player->m_locked)
+    if (g_textbox->m_is_active)
     {
 		g_textbox->render_textbox(&g_shader_program);
 		glm::vec3 text_position = glm::vec3(-g_view_matrix[3].x * (1 / 0.5) - 8, -7, 0);
@@ -274,6 +280,7 @@ void update()
 
         if (g_current_scene->m_state.player->m_locked)
         {
+            g_textbox->activate();
             int MAX_CHARACTER_COUNT = 33;
             // split text_buffer into vector of strings of max length MAX_CHARACTER_COUNT
             std::vector<std::string> text_lines;
@@ -287,23 +294,38 @@ void update()
 
             // add remaining text to vector
             text_lines.push_back(text);
+            
+            //g_dialogue_timer = SDL_GetTicks();
 
-
-            while (text_lines.size() > 1)
+            //g_textbox->activate();
+            while (!text_lines.empty())
             {
+                u8* key_state = (u8*) SDL_GetKeyboardState(NULL);
+                u32 current_time = SDL_GetTicks();
 				// draw one line at a time, wait for z input to draw next line (have a waiting period too)
-				if (key_state[SDL_SCANCODE_Z])
+                // want release of Z to draw a line
+
+                while (key_state[SDL_SCANCODE_Z] && current_time - g_dialogue_timer > DIALOGUE_DELAY)
 				{
+                    g_dialogue_timer = current_time;
 					g_current_scene->m_state.text_buffer = text_lines[0];
+
+                    //g_textbox->update_text(text_lines[0], 0.5f, 0.0f);
+                    g_textbox->update_text(text_lines[0], 0.5f, 0.0f);
+					g_textbox->update_textbox(g_view_matrix);
+
 					text_lines.erase(text_lines.begin());
+                    
+                    // sleep for 1 second
 				}
-				g_textbox->update_textbox(g_view_matrix);
-				g_textbox->update_text(text_lines[0], 0.5f, 0.0f);
 
                 render();
+				SDL_Delay(DIALOGUE_DELAY);
+				key_state = (u8*) SDL_GetKeyboardState(NULL);
             }
 
-            g_current_scene->m_state.player->m_locked = false;
+            g_textbox->deactivate();
+			g_current_scene->m_state.player->m_locked = false;
         }
 
         g_is_colliding_bottom = g_current_scene->m_state.player->m_collided_bottom;
