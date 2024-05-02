@@ -128,6 +128,7 @@ void Entity::update(float delta_time, Entity *player, Entity *objects, int objec
 
     m_model_matrix = glm::mat4(1.0f);
     m_model_matrix = glm::translate(m_model_matrix, m_position);
+
 }
 
 void const Entity::check_collision_y(Entity *collidable_entities, int collidable_entity_count)
@@ -258,15 +259,15 @@ void Entity::render(ShaderProgram *program)
     
     program->set_model_matrix(m_model_matrix);
     
-    // TODO: remove patch for only player animation
-    if (m_animation_indices != NULL && m_entity_type == PLAYER)
+    if (m_animation_indices != NULL)
     {
         draw_sprite_from_texture_atlas(program, m_texture_id, m_animation_indices[m_animation_index]);
         return;
     }
-    
+
     float vertices[]   = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
     float tex_coords[] = {  0.0,  1.0, 1.0,  1.0, 1.0, 0.0,  0.0,  1.0, 1.0, 0.0,  0.0, 0.0 };
+
     
     glBindTexture(GL_TEXTURE_2D, m_texture_id);
     

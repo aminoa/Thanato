@@ -44,11 +44,8 @@
     <ClInclude Include="Home.h">
       <Filter>Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="json.hpp">
-      <Filter>Tools</Filter>
-    </ClInclude>
-    <ClInclude Include="tileson.h">
-      <Filter>Tools</Filter>
+    <ClInclude Include="TextBox.h">
+      <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -78,6 +75,9 @@
     </ClCompile>
     <ClCompile Include="Home.cpp">
       <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="TextBox.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

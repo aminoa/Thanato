@@ -1,7 +1,7 @@
 #pragma once
 #include "Map.h"
 
-enum EntityType { PLATFORM, PLAYER, ENEMY, INTERACTABLE, LOADING_ZONE };
+enum EntityType { PLATFORM, PLAYER, ENEMY, INTERACTABLE, LOADING_ZONE, TEXTBOX}; // TExtbox is unusied now
 enum AIType     { WALKER, GUARD            };
 enum AIState    { WALKING, IDLE, ATTACKING };
 
@@ -27,7 +27,7 @@ private:
     
 public:
     // Static attributes
-    static const int SECONDS_PER_FRAME = 4;
+    int SECONDS_PER_FRAME = 4;
     static const int LEFT  = 0,
                      RIGHT = 1,
                      UP    = 2,

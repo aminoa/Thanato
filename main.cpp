@@ -34,6 +34,7 @@ enum LevelIndex { TEST_LEVEL, HOME };
 #include "Utility.h"
 #include "Scene.h"
 #include "Effects.h"
+#include "Textbox.h"
 
 // Levels
 #include "TestLevel.h"
@@ -60,7 +61,7 @@ const char V_SHADER_PATH[] = "shaders/vertex_textured.glsl",
            F_SHADER_PATH[] = "shaders/fragment_textured.glsl";
 
 const float MILLISECONDS_IN_SECOND = 1000.0;
-const float CAMERA_SCALE = 0.75f;
+const float CAMERA_SCALE = 0.5f;
 
 // Rendering
 SDL_Window* g_display_window;
@@ -82,7 +83,7 @@ bool g_is_colliding_bottom = false;
 //text
 Entity* g_text_texture;
 Entity* g_state_text;
-//Entity* g_textbox;
+TextBox* g_textbox;
 bool g_in_text_state = false;
 
 // ––––– GENERAL FUNCTIONS ––––– //
@@ -139,8 +140,9 @@ void initialise()
 	g_state_text = new Entity();
 	g_state_text->m_texture_id = Utility::load_texture(FONT_FILEPATH);
 	//g_state_text->set_position(glm::vec3(0.0f, 1.0f, 0.0f));
-    //g_textbox = new Entity();
-    //g_textbox->m_texture_id = Utility::load_texture(TEXTBOX_FILEPATH);
+    g_textbox = new TextBox();
+    g_textbox->deactivate();
+
 }
 
 void process_input()
@@ -182,27 +184,23 @@ void process_input()
 
     const u8* key_state = SDL_GetKeyboardState(NULL);
 
-    // TOOD: check controller
-
-    if (key_state[SDL_SCANCODE_LEFT] || key_state[SDL_CONTROLLER_BUTTON_DPAD_LEFT])
+    if (key_state[SDL_SCANCODE_LEFT])
     {
         g_current_scene->m_state.player->set_velocity(glm::vec3(-1.0f, 0.0f, 0.0f));
         g_current_scene->m_state.player->m_animation_indices = g_current_scene->m_state.player->m_walking[g_current_scene->m_state.player->LEFT];
     }
-    else if (key_state[SDL_SCANCODE_RIGHT] || key_state[SDL_CONTROLLER_BUTTON_DPAD_RIGHT])
+    else if (key_state[SDL_SCANCODE_RIGHT])
     {
         g_current_scene->m_state.player->set_velocity(glm::vec3(1.0f, 0.0f, 0.0f));
         g_current_scene->m_state.player->m_animation_indices = g_current_scene->m_state.player->m_walking[g_current_scene->m_state.player->RIGHT];
     }
-    else if (key_state[SDL_SCANCODE_UP] || key_state[SDL_CONTROLLER_BUTTON_DPAD_UP])
+    else if (key_state[SDL_SCANCODE_UP])
     {
-		//g_current_scene->m_state.player->m_movement.y = 1.0f;
         g_current_scene->m_state.player->set_velocity(glm::vec3(0.0f, 1.0f, 0.0f));
         g_current_scene->m_state.player->m_animation_indices = g_current_scene->m_state.player->m_walking[g_current_scene->m_state.player->UP];
 	}
-    else if (key_state[SDL_SCANCODE_DOWN] || key_state[SDL_CONTROLLER_BUTTON_DPAD_UP])
+    else if (key_state[SDL_SCANCODE_DOWN])
     {
-		//g_current_scene->m_state.player->m_movement.y = -1.0f;
         g_current_scene->m_state.player->set_velocity(glm::vec3(0.0f, -1.0f, 0.0f));
         g_current_scene->m_state.player->m_animation_indices = g_current_scene->m_state.player->m_walking[g_current_scene->m_state.player->DOWN];
 	} 
@@ -215,20 +213,17 @@ void process_input()
     if (key_state[SDL_SCANCODE_X]) 
     {
         g_current_scene->m_state.player->m_speed = 4.0f;
+        g_current_scene->m_state.player->SECONDS_PER_FRAME = 8;
 	}
     else
     {
 		g_current_scene->m_state.player->m_speed = 2.0f;
+        g_current_scene->m_state.player->SECONDS_PER_FRAME = 4;
     }
 
     // Debug Map Switch
     if (key_state[SDL_SCANCODE_D] && key_state[SDL_SCANCODE_1]) switch_to_scene(g_levels[LevelIndex::TEST_LEVEL]);
     if (key_state[SDL_SCANCODE_D] && key_state[SDL_SCANCODE_2]) switch_to_scene(g_levels[LevelIndex::HOME]);
-
-    //if (glm::length(g_current_scene->m_state.player->m_movement) > 1.0f)
-    //{
-    //    g_current_scene->m_state.player->m_movement = glm::normalize(g_current_scene->m_state.player->m_movement);
-    //}
 }
 
 void update()
@@ -268,6 +263,7 @@ void update()
     }
 
     g_accumulator = delta_time;
+    //g_textbox->update(delta_time, g_current_scene->m_state.player, g_current_scene->m_state.interactables, g_current_scene->m_number_of_interactables, g_current_scene->m_state.map);
 
     // Prevent the camera from showing anything outside of the "edge" of the level
     g_view_matrix = glm::mat4(1.0f);
@@ -284,6 +280,8 @@ void update()
     // Need to make this level by level
     //if (g_current_scene == g_levelOne && g_current_scene->m_state.player->get_position().y < -10.0f) switch_to_scene(g_levelOne);
     //g_view_matrix = glm::translate(g_view_matrix, g_effects->m_view_offset);
+    g_textbox->update(g_view_matrix);
+
 }
 
 void render()
@@ -297,10 +295,10 @@ void render()
     
     if (g_in_text_state)
     {
-        // TODO: rectangle over text
-        //auto temp_view_matrix = glm::scale(g_view_matrix, glm::vec3(0.1f, 0.1f, 0.1f));
-        glm::vec3 text_position = glm::vec3(-g_view_matrix[3].x * (1 / CAMERA_SCALE) - 3, -4.0, 0);
-		Utility::draw_text(&g_shader_program, g_state_text->m_texture_id, "abcdefghijkl", 0.5f, 0.0f, text_position);
+        g_textbox->activate();
+		g_textbox->render(&g_shader_program);
+        glm::vec3 text_position = glm::vec3(-g_view_matrix[3].x * (1 / CAMERA_SCALE) - 6, -6.5, 0);
+		Utility::draw_text(&g_shader_program, g_state_text->m_texture_id, "abcdefghijklmnopqrstuvwxyz", 0.5f, 0.0f, text_position);
     }
     
     SDL_GL_SwapWindow(g_display_window);

@@ -17,7 +17,7 @@ void Scene::player_initialize(Entity* player)
     player->m_animation_indices = player->m_walking[player->RIGHT];  
     player->m_animation_frames = 4;
     player->m_animation_index  = 0;
-    player->m_animation_time   = 0.0f;
+    player->m_animation_time   = 0.5f;
     player->m_animation_cols   = 4;
     player->m_animation_rows   = 3;
     player->set_height(1.0f);
