@@ -18,6 +18,8 @@ TextBox::TextBox()
     m_model_matrix = glm::mat4(1.0f);
 	text_position = glm::vec3(0.0f, 0.0f, 0.0f);
 	m_text_buffer = "";
+
+    m_hide_box = false;
 }
 
 void TextBox::update_textbox(glm::mat4& g_view_matrix)
@@ -33,6 +35,7 @@ void TextBox::update_textbox(glm::mat4& g_view_matrix)
 
 void TextBox::render_textbox(ShaderProgram* program)
 {
+    if (m_hide_box) return;
     if (!m_is_active) return;
 
 	program->set_model_matrix(m_model_matrix);
@@ -115,6 +118,7 @@ void TextBox::update_text(std::string text, float screen_size, float spacing)
 
 void TextBox::render_text(ShaderProgram* program, glm::vec3 position)
 {
+
     // 4. And render all of them using the pairs
     glm::mat4 model_matrix = glm::mat4(1.0f);
     model_matrix = glm::translate(model_matrix, position);

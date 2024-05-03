@@ -60,6 +60,7 @@ public:
     bool m_collided_right  = false;
 
     bool m_locked = false;
+    int scene_swap = -1;
 
     // Methods
     Entity();

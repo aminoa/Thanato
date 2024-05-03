@@ -8,7 +8,6 @@
 * Academic Misconduct.
 **/
 
-enum LevelIndex { TEST_LEVEL, HOME };
 
 #define u8 Uint8
 #define u32 Uint32
@@ -22,6 +21,7 @@ enum LevelIndex { TEST_LEVEL, HOME };
 #include <GL/glew.h>
 #endif
 
+#include "Utility.h"
 #include <SDL_mixer.h>
 #include <SDL.h>
 #include <SDL_opengl.h>
@@ -33,10 +33,10 @@ enum LevelIndex { TEST_LEVEL, HOME };
 #include <vector>
 #include "Entity.h"
 #include "Map.h"
-#include "Utility.h"
 #include "Scene.h"
 #include "Effects.h"
 #include "Textbox.h"
+#include <SDL_events.h>
 
 // Levels
 #include "TestLevel.h"
@@ -78,7 +78,7 @@ Scene* g_current_scene;
 Scene* g_levels[10];
 //TestLevel* g_levelOne;
 
-//Effects *g_effects;
+Effects *g_effects;
 
 float g_previous_ticks = 0.0f;
 float g_accumulator = 0.0f;
@@ -89,7 +89,9 @@ u32 g_dialogue_timer = 0;
 Entity* g_text_texture;
 //Entity* g_state_text;
 TextBox* g_textbox;
+TextBox* g_textbox2;
 bool g_in_text_state = false;
+int scene_swap = -1;
 
 // ––––– GENERAL FUNCTIONS ––––– //
 void switch_to_scene(Scene *scene)
@@ -137,16 +139,16 @@ void initialise()
     
     switch_to_scene(g_levels[LevelIndex::HOME]);
     
-    //g_effects = new Effects(g_projection_matrix, g_view_matrix);
-    // Special effect added
-    //g_effects->start(FADEIN, 0.25f);
+    g_effects = new Effects(g_projection_matrix, g_view_matrix);
 
-    //text
-	//g_state_text = new Entity();
-	//g_state_text->m_texture_id = Utility::load_texture(FONT_FILEPATH);
-	//g_state_text->set_position(glm::vec3(0.0f, 1.0f, 0.0f));
     g_textbox = new TextBox();
     g_textbox->deactivate();
+    g_textbox2 = new TextBox();
+    g_textbox2->deactivate();
+    g_textbox2->m_hide_box = true;
+
+    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
+	auto text_sfx = Mix_LoadMUS("assets/Text Box Sound.mp3");
 }
 
 void process_input()
@@ -187,6 +189,8 @@ void process_input()
     }
 
     const u8* key_state = SDL_GetKeyboardState(NULL);
+
+    if (g_current_scene->m_state.player->m_locked) return;
 
     // Debug Map Switch
     if (key_state[SDL_SCANCODE_D] && key_state[SDL_SCANCODE_1]) switch_to_scene(g_levels[LevelIndex::TEST_LEVEL]);
@@ -252,7 +256,10 @@ void render()
 		g_textbox->render_textbox(&g_shader_program);
 		glm::vec3 text_position = glm::vec3(-g_view_matrix[3].x * (1 / 0.5) - 8, -7, 0);
 		g_textbox->render_text(&g_shader_program, text_position);
+        g_textbox2->render_text(&g_shader_program, text_position + glm::vec3(0, -1, 0));
 	}
+
+    g_effects->render();
     
     SDL_GL_SwapWindow(g_display_window);
 }
@@ -274,13 +281,14 @@ void update()
 
     while (delta_time >= FIXED_TIMESTEP) {
         g_current_scene->update(FIXED_TIMESTEP);
-        //g_effects->update(FIXED_TIMESTEP);
+        g_effects->update(FIXED_TIMESTEP);
 
         const u8* key_state = SDL_GetKeyboardState(NULL);
 
         if (g_current_scene->m_state.player->m_locked)
         {
             g_textbox->activate();
+            g_textbox2->activate();
             int MAX_CHARACTER_COUNT = 33;
             // split text_buffer into vector of strings of max length MAX_CHARACTER_COUNT
             std::vector<std::string> text_lines;
@@ -294,34 +302,43 @@ void update()
 
             // add remaining text to vector
             text_lines.push_back(text);
-            
-            //g_dialogue_timer = SDL_GetTicks();
+            text_lines.push_back("");
+            text_lines.push_back("");
 
-            //g_textbox->activate();
+            if (text_lines.size() % 2 == 1) { text_lines.push_back(""); }
+
             while (!text_lines.empty())
             {
-                u8* key_state = (u8*) SDL_GetKeyboardState(NULL);
+                //const u8* key_state = SDL_GetKeyboardState(NULL);
                 u32 current_time = SDL_GetTicks();
-				// draw one line at a time, wait for z input to draw next line (have a waiting period too)
-                // want release of Z to draw a line
+                SDL_Event event;
+                SDL_PollEvent(&event);
 
-                while (key_state[SDL_SCANCODE_Z] && current_time - g_dialogue_timer > DIALOGUE_DELAY)
+                u8* key_state = (u8*)SDL_GetKeyboardState(NULL);
+                
+                //if (key_state[SDL_SCANCODE_Z] && current_time - g_dialogue_timer > DIALOGUE_DELAY)
+                if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_z)
 				{
+                    std::cout << "Z key pressed" << std::endl;
                     g_dialogue_timer = current_time;
 					g_current_scene->m_state.text_buffer = text_lines[0];
 
                     //g_textbox->update_text(text_lines[0], 0.5f, 0.0f);
                     g_textbox->update_text(text_lines[0], 0.5f, 0.0f);
+                    g_textbox2->update_text(text_lines[1], 0.5f, 0.0f);
+            
+                    // erase 2 elements of text line
+                    text_lines.erase(text_lines.begin());
+                    text_lines.erase(text_lines.begin());
+
 					g_textbox->update_textbox(g_view_matrix);
 
-					text_lines.erase(text_lines.begin());
-                    
-                    // sleep for 1 second
+                    // play text sfx
+                    Mix_PlayMusic(Mix_LoadMUS("assets/Text Box Sound.mp3"), 0);
 				}
 
                 render();
-				SDL_Delay(DIALOGUE_DELAY);
-				key_state = (u8*) SDL_GetKeyboardState(NULL);
+				//key_state = (u8*) SDL_GetKeyboardState(NULL);
             }
 
             g_textbox->deactivate();
@@ -339,7 +356,6 @@ void update()
     g_view_matrix = glm::mat4(1.0f);
     g_view_matrix = glm::scale(g_view_matrix, glm::vec3(CAMERA_SCALE, CAMERA_SCALE, 1.0f));
 
-    // TODO: need more checks to keep camera in bounds 
     if (g_current_scene->m_state.player->get_position().x > g_current_scene->LEVEL_LEFT_EDGE) {
         g_view_matrix = glm::translate(g_view_matrix, glm::vec3(-g_current_scene->m_state.player->get_position().x, 3.75, 0));
     }
@@ -347,7 +363,7 @@ void update()
         g_view_matrix = glm::translate(g_view_matrix, glm::vec3(-5, 3.75, 0));
     }
 
-    //g_view_matrix = glm::translate(g_view_matrix, g_effects->m_view_offset);
+    g_view_matrix = glm::translate(g_view_matrix, g_effects->m_view_offset);
 }
 
 
@@ -355,7 +371,7 @@ void shutdown()
 {    
     SDL_Quit();
     for (Scene* level : g_levels) { delete level; }
-    //delete g_effects;
+    delete g_effects;
 }
 
 // ––––– DRIVER GAME LOOP ––––– //
@@ -368,7 +384,13 @@ int main(int argc, char* argv[])
         process_input();
         update();
         
-        if (g_current_scene->m_state.next_scene_id >= 0) switch_to_scene(g_levels[g_current_scene->m_state.next_scene_id]);
+
+        if (g_current_scene->m_state.next_scene_id >= 0)
+        {
+            switch_to_scene(g_levels[g_current_scene->m_state.next_scene_id]);
+            g_effects->start(FADEIN, 0.5f);
+        }
+            
         
         render();
     }

@@ -88,7 +88,7 @@ bool Map::is_solid(glm::vec3 position, float *penetration_x, float *penetration_
     *penetration_x = 0;
     *penetration_y = 0;
     
-    if (position.x < m_left_bound || position.x > m_right_bound) return false;
+   if (position.x < m_left_bound || position.x > m_right_bound) return false;
     if (position.y > m_top_bound || position.y < m_bottom_bound) return false;
     
     int tile_x = floor((position.x + (m_tile_size / 2)) / m_tile_size);

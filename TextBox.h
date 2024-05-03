@@ -34,5 +34,7 @@ public:
     std::vector<float> vertices;
     std::vector<float> texture_coordinates;
 	size_t text_size;
+
+	bool m_hide_box;
 };
 
