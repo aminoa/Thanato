@@ -65,7 +65,8 @@ void Brunswick::initialise()
     glClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_OPACITY);
 
     m_state.player = new Entity();
-    player_initialize(m_state.player);
+    // 19, -5
+    player_initialize(m_state.player, glm::vec3(19.0f, -5.0f, 0.0f));
 
     // 3 hedgehog AIs 
     m_state.interactables = new Entity[m_number_of_interactables];
@@ -85,13 +86,14 @@ void Brunswick::initialise()
     m_state.interactables[2].set_ai_type(WALKER);
     m_state.interactables[2].set_ai_state(WALKING);
     m_state.interactables[2].m_texture_id = Utility::load_texture("assets/sonic.png");
+    m_state.interactables[2].set_dialogue("Scoop: Don't go onto the road or else the world will reset! You probably don't want to do that yet, you're too young.");
     m_state.interactables[2].set_position(glm::vec3(7.0f, -6.0f, 0.0f));
 
     m_state.loading_zones = new Entity[1];
     m_state.loading_zones[0].set_entity_type(LOADING_ZONE);
     //m_state.loading_zones[0].m_texture_id = Utility::load_texture("assets/sonic.png");
     m_state.loading_zones[0].set_position(glm::vec3(1.0f, -4.3f, 0.0f));
-    m_state.loading_zones[0].scene_swap = 0;
+    m_state.loading_zones[0].scene_swap = LevelIndex::PATI;
 
     // Background
     glClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_OPACITY);
@@ -104,6 +106,13 @@ void Brunswick::update(float delta_time)
     m_state.player->update(delta_time, m_state.player, NULL, 0, m_state.map);
     //m_state.player->update(delta_time, m_state.player, NULL, 0, m_state.object_map);
     
+    // Death via road
+
+    if (m_state.player->get_position().y < -7.1f)
+    {
+		m_state.next_scene_id = 2;
+	}
+
     // check collision with object map 
     //m_state.player->check_collision_x(m_state.object_map);
     //m_state.player->check_collision_y(m_state.object_map);

@@ -144,8 +144,10 @@
   <ItemGroup>
     <ClInclude Include="Brunswick.h" />
     <ClInclude Include="Effects.h" />
+    <ClInclude Include="EndScreen.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Home.h" />
+    <ClInclude Include="Pati.h" />
     <ClInclude Include="TestLevel.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="Scene.h" />
@@ -158,8 +160,10 @@
   <ItemGroup>
     <ClCompile Include="Brunswick.cpp" />
     <ClCompile Include="Effects.cpp" />
+    <ClCompile Include="EndScreen.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Home.cpp" />
+    <ClCompile Include="Pati.cpp" />
     <ClCompile Include="TestLevel.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />

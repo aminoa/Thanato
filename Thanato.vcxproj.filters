@@ -53,6 +53,12 @@
     <ClInclude Include="Brunswick.h">
       <Filter>Scenes</Filter>
     </ClInclude>
+    <ClInclude Include="Pati.h">
+      <Filter>Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="EndScreen.h">
+      <Filter>Scenes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entity.cpp">
@@ -89,6 +95,12 @@
       <Filter>Scenes</Filter>
     </ClCompile>
     <ClCompile Include="Brunswick.cpp">
+      <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Pati.cpp">
+      <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="EndScreen.cpp">
       <Filter>Scenes</Filter>
     </ClCompile>
   </ItemGroup>

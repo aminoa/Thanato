@@ -54,6 +54,5 @@ public:
     
     GameState const get_state() const { return m_state; }
     
-    void player_initialize(Entity* player);
-
+    void player_initialize(Entity* player, glm::vec3 start_position);
 };

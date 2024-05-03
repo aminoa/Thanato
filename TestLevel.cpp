@@ -40,7 +40,7 @@ void TestLevel::initialise()
     glClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_OPACITY);
 
     m_state.player = new Entity();
-    player_initialize(m_state.player);
+    player_initialize(m_state.player, glm::vec3(2.0f, -2.0f, 0.0f));    
 
     // Interactable Object
     m_state.interactables = new Entity[m_number_of_interactables];

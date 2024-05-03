@@ -43,6 +43,8 @@
 #include "Home.h"
 #include "TitleScreen.h"
 #include "Brunswick.h"
+#include "Pati.h"
+#include "EndScreen.h"
 
 const char FONT_FILEPATH[] = "assets/all_8x8.png";
 const char TEXTBOX_FILEPATH[] = "assets/textbox.png";
@@ -155,6 +157,8 @@ void initialise()
     g_levels[LevelIndex::HOME] = new Home();
     g_levels[LevelIndex::TITLE_SCREEN] = new TitleScreen();
     g_levels[LevelIndex::BRUNSWICK] = new Brunswick();
+    g_levels[LevelIndex::PATI] = new Pati();
+    g_levels[LevelIndex::END_SCREEN] = new EndScreen();
 
     switch_to_scene(g_levels[LevelIndex::TITLE_SCREEN]);
     
@@ -223,6 +227,8 @@ void process_input()
     if (key_state[SDL_SCANCODE_D] && key_state[SDL_SCANCODE_2]) switch_to_scene(g_levels[LevelIndex::HOME]);
     if (key_state[SDL_SCANCODE_D] && key_state[SDL_SCANCODE_3]) switch_to_scene(g_levels[LevelIndex::TITLE_SCREEN]);
     if (key_state[SDL_SCANCODE_D] && key_state[SDL_SCANCODE_4]) switch_to_scene(g_levels[LevelIndex::BRUNSWICK]);
+    if (key_state[SDL_SCANCODE_D] && key_state[SDL_SCANCODE_5]) switch_to_scene(g_levels[LevelIndex::PATI]);
+    if (key_state[SDL_SCANCODE_D] && key_state[SDL_SCANCODE_6]) switch_to_scene(g_levels[LevelIndex::END_SCREEN]);
 
     if (g_current_scene->m_state.player->m_locked)
     {

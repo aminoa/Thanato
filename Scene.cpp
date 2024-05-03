@@ -1,10 +1,10 @@
 #include "Scene.h"
 
-void Scene::player_initialize(Entity* player)
+void Scene::player_initialize(Entity* player, glm::vec3 start_position)
 {
     // Existing
     player->set_entity_type(PLAYER);
-    player->set_position(m_player_start_position);
+    player->set_position(start_position);
     player->set_movement(glm::vec3(0.0f));
     player->m_texture_id = Utility::load_texture("./assets/characters/ashva.png");
     
