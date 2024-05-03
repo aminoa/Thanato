@@ -94,13 +94,13 @@ void Home::initialise()
 
     m_state.interactables[3].set_entity_type(INTERACTABLE);
     m_state.interactables[3].set_position(glm::vec3(16.0f, -6.0f, 0.0f));
-    m_state.interactables[3].set_dialogue("(Thoughts): Your collections of history books - partly through 'These Truths' to improve your 16 year old understanding of US history which you forget half of. The shelf gives you a weird perspective on life though, right? All of these books chart the life stories of different notable people but none of them are here now. They were born, did some stuff, and then that's it, their lives were over. The same is gonna happen to you.");
+    m_state.interactables[3].set_dialogue("(Thoughts): Your collections of books - partly through a pop history book as a guilty pleasure. The shelf gives you a weird perspective on life though. All of these books chart the life stories of different notable people but none of them are here now. They were born, did some stuff, and then that's it, their lives were over, preserved only through the words of dedicated authors.");
 
     m_state.loading_zones = new Entity[1];
     m_state.loading_zones[0].set_entity_type(LOADING_ZONE);
     //m_state.loading_zones[0].m_texture_id = Utility::load_texture("assets/sonic.png");
     m_state.loading_zones[0].set_position(glm::vec3(9.5f, -9.0f, 0.0f));
-    m_state.loading_zones[0].scene_swap = 0;
+    m_state.loading_zones[0].scene_swap = LevelIndex::BRUNSWICK;
 
     // Background
     glClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_OPACITY);

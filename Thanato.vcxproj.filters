@@ -50,6 +50,9 @@
     <ClInclude Include="TitleScreen.h">
       <Filter>Scenes</Filter>
     </ClInclude>
+    <ClInclude Include="Brunswick.h">
+      <Filter>Scenes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entity.cpp">
@@ -83,6 +86,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="TitleScreen.cpp">
+      <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Brunswick.cpp">
       <Filter>Scenes</Filter>
     </ClCompile>
   </ItemGroup>

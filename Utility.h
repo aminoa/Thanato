@@ -12,7 +12,7 @@
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "ShaderProgram.h"
-enum LevelIndex { TEST_LEVEL, HOME, TITLE_SCREEN };
+enum LevelIndex { TEST_LEVEL, HOME, TITLE_SCREEN, BRUNSWICK };
 
 class Utility {
 public:

@@ -142,6 +142,7 @@
     </CopyFileToFolders>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Brunswick.h" />
     <ClInclude Include="Effects.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Home.h" />
@@ -155,6 +156,7 @@
     <ClInclude Include="Utility.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Brunswick.cpp" />
     <ClCompile Include="Effects.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Home.cpp" />

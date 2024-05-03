@@ -76,7 +76,18 @@ void Entity::ai_activate(Entity *player)
     switch (m_ai_type)
     {
         case WALKER:
-            ai_walker();
+           //ai_walker();
+            // set movement either to 1 or -1 randomly
+            
+            if (rand() % 2 == 0)
+            {
+				m_movement = glm::vec3(1.0f, 0.0f, 0.0f);
+			}
+            else
+            {
+				m_movement = glm::vec3(-1.0f, 0.0f, 0.0f);
+			}
+
             break;
             
         default:
@@ -255,7 +266,7 @@ void const Entity::check_collision_x(Map *map)
 
 void Entity::render(ShaderProgram *program)
 {
-    if (!m_is_active) return;
+   if (!m_is_active) return;
     
     program->set_model_matrix(m_model_matrix);
     
