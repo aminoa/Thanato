@@ -9,6 +9,10 @@ BG_BLUE = 0.0f,
 BG_GREEN = 0.0f,
 BG_OPACITY = 0.0f;
 
+auto bgm_music = "assets/Indoor Areas.wav";
+const int LOOP_FOREVER = -1;
+Mix_Music* g_music;
+
 unsigned int BACKGROUND_MAP_HOME_DATA[] =
 {
 	16,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,18,
@@ -101,11 +105,10 @@ void Home::initialise()
     // Background
     glClearColor(BG_RED, BG_BLUE, BG_GREEN, BG_OPACITY);
     /** BGM and SFX */
-    //Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
-    //m_state.bgm = Mix_LoadMUS("assets/firsttest.wav");
-    //Mix_PlayMusic(m_state.bgm, -1);
-    //Mix_VolumeMusic(MIX_MAX_VOLUME / 2);
-    //m_state.jump_sfx = Mix_LoadWAV("assets/jump.wav");
+    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
+    m_state.bgm = Mix_LoadMUS("assets/Indoor Areas.mp3");
+    //g_music = Mix_LoadMUS(bgm_music);
+    Mix_PlayMusic(m_state.bgm, -1);
 
     m_state.text_buffer = "";
 }

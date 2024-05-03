@@ -31,6 +31,8 @@ struct GameState
 
     std::string text_buffer;
     int next_scene_id;
+
+    Entity* title_screen_text;
 };
 
 class Scene {

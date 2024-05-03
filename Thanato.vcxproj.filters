@@ -47,6 +47,9 @@
     <ClInclude Include="TextBox.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="TitleScreen.h">
+      <Filter>Scenes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Entity.cpp">
@@ -78,6 +81,9 @@
     </ClCompile>
     <ClCompile Include="TextBox.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="TitleScreen.cpp">
+      <Filter>Scenes</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

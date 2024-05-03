@@ -41,6 +41,7 @@
 // Levels
 #include "TestLevel.h"
 #include "Home.h"
+#include "TitleScreen.h"
 
 const char FONT_FILEPATH[] = "assets/all_8x8.png";
 const char TEXTBOX_FILEPATH[] = "assets/textbox.png";
@@ -93,6 +94,21 @@ TextBox* g_textbox2;
 bool g_in_text_state = false;
 int scene_swap = -1;
 
+// Audio
+const int CD_QUAL_FREQ = 44100,  // compact disk (CD) quality frequency
+AUDIO_CHAN_AMT = 2,
+AUDIO_BUFF_SIZE = 4096;
+
+const int PLAY_ONCE = 0,
+NEXT_CHNL = -1,  // next available channel
+MUTE_VOL = 0,
+MILS_IN_SEC = 1000,
+ALL_SFX_CHN = -1;
+
+auto textbox_sfx_path = "assets/Text Box Sound.wav";
+Mix_Chunk* g_text_sfx;
+
+
 // ––––– GENERAL FUNCTIONS ––––– //
 void switch_to_scene(Scene *scene)
 {    
@@ -136,8 +152,9 @@ void initialise()
     // Level Setup 
     g_levels[LevelIndex::TEST_LEVEL] = new TestLevel();
     g_levels[LevelIndex::HOME] = new Home();
+    g_levels[LevelIndex::TITLE_SCREEN] = new TitleScreen();
     
-    switch_to_scene(g_levels[LevelIndex::HOME]);
+    switch_to_scene(g_levels[LevelIndex::TITLE_SCREEN]);
     
     g_effects = new Effects(g_projection_matrix, g_view_matrix);
 
@@ -147,8 +164,15 @@ void initialise()
     g_textbox2->deactivate();
     g_textbox2->m_hide_box = true;
 
-    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
-	auto text_sfx = Mix_LoadMUS("assets/Text Box Sound.mp3");
+    Mix_OpenAudio(
+        CD_QUAL_FREQ,        // the frequency to playback audio at (in Hz)
+        MIX_DEFAULT_FORMAT,  // audio format
+        AUDIO_CHAN_AMT,      // number of channels (1 is mono, 2 is stereo, etc).
+        AUDIO_BUFF_SIZE      // audio buffer size in sample FRAMES (total samples divided by channel count)
+    );
+
+    g_text_sfx = Mix_LoadWAV(textbox_sfx_path);
+
 }
 
 void process_input()
@@ -334,8 +358,12 @@ void update()
 					g_textbox->update_textbox(g_view_matrix);
 
                     // play text sfx
-                    Mix_PlayMusic(Mix_LoadMUS("assets/Text Box Sound.mp3"), 0);
-				}
+                    Mix_PlayChannel(
+                        NEXT_CHNL,       // using the first channel that is not currently in use...
+                        g_text_sfx,  // ...play this chunk of audio...
+                        PLAY_ONCE        // ...once.
+                    );
+                }
 
                 render();
 				//key_state = (u8*) SDL_GetKeyboardState(NULL);
