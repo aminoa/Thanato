@@ -61,7 +61,7 @@ void Pati::initialise()
     m_state.interactables[0].set_entity_type(INTERACTABLE);
     m_state.interactables[0].m_texture_id = Utility::load_texture("assets/sonic.png");
     m_state.interactables[0].set_position(glm::vec3(3.0f, -4.0f, 0.0f));
-    m_state.interactables[0].set_dialogue("Sonic: Get out. Now.");
+    m_state.interactables[0].set_dialogue("Pati: Get out. Now.");
 
     m_state.interactables[1].set_entity_type(INTERACTABLE);
     m_state.interactables[1].set_position(glm::vec3(9.0f, -2.0f, 0.0f));

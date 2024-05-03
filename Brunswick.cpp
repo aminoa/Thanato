@@ -44,7 +44,7 @@ Brunswick::~Brunswick()
 
 void Brunswick::initialise()
 {
-    m_number_of_interactables = 3;
+    m_number_of_interactables = 4;
 
     LEVEL_WIDTH = 20.0f;
     LEVEL_HEIGHT = 10.0f;
@@ -75,24 +75,30 @@ void Brunswick::initialise()
     m_state.interactables[0].set_ai_state(WALKING);
     m_state.interactables[0].m_texture_id = Utility::load_texture("assets/sonic.png");
     m_state.interactables[0].set_position(glm::vec3(9.0f, -4.0f, 0.0f));
+    m_state.interactables[0].set_dialogue("Pet: Wow, another tile calamity! It seems that there was a really bad storm that messed up all the architecture outside and broke the graphics. Oh well, you'll probably want to go inside to the other house while the weather is still bad out. It'll clear in a couple of days. Oh, Ann? I haven't seen here recently unfortunately, I'll let you know though if I hear anything.");
 
     m_state.interactables[1].set_entity_type(INTERACTABLE);
     m_state.interactables[1].set_ai_type(WALKER);
     m_state.interactables[1].set_ai_state(WALKING);
     m_state.interactables[1].m_texture_id = Utility::load_texture("assets/sonic.png");
+    m_state.interactables[1].set_dialogue("Walt: Me, Pet, and Scoop are doing a little dance outside at the moment. While the storm is going, I'm not sure if there's a ton you can do in this area. But you can at least enjoy the vibes!");
     m_state.interactables[1].set_position(glm::vec3(5.0f, -5.0f, 0.0f));
 
     m_state.interactables[2].set_entity_type(INTERACTABLE);
     m_state.interactables[2].set_ai_type(WALKER);
     m_state.interactables[2].set_ai_state(WALKING);
     m_state.interactables[2].m_texture_id = Utility::load_texture("assets/sonic.png");
-    m_state.interactables[2].set_dialogue("Scoop: Don't go onto the road or else the world will reset! You probably don't want to do that yet, you're too young.");
+    m_state.interactables[2].set_dialogue("Scoop: Don't go onto the road or else the world will reset! You probably don't want to do that yet, you're too young. I'd tell you not to kill yourself but that's a bit too trite to say.");
     m_state.interactables[2].set_position(glm::vec3(7.0f, -6.0f, 0.0f));
+
+    m_state.interactables[3].set_entity_type(INTERACTABLE);
+    m_state.interactables[3].set_dialogue("(Thoughts): Hmmm, the door seems to be locked. You'll need to find another way into the house");
+    m_state.interactables[3].set_position(glm::vec3(1.0f, -4.3f, 0.0f));
 
     m_state.loading_zones = new Entity[1];
     m_state.loading_zones[0].set_entity_type(LOADING_ZONE);
     //m_state.loading_zones[0].m_texture_id = Utility::load_texture("assets/sonic.png");
-    m_state.loading_zones[0].set_position(glm::vec3(1.0f, -4.3f, 0.0f));
+    m_state.loading_zones[0].set_position(glm::vec3(1.0f, -1.3f, 0.0f));
     m_state.loading_zones[0].scene_swap = LevelIndex::PATI;
 
     // Background
@@ -103,7 +109,7 @@ void Brunswick::initialise()
 
 void Brunswick::update(float delta_time)
 {
-    m_state.player->update(delta_time, m_state.player, NULL, 0, m_state.map);
+   m_state.player->update(delta_time, m_state.player, NULL, 0, m_state.map);
     //m_state.player->update(delta_time, m_state.player, NULL, 0, m_state.object_map);
     
     // Death via road
@@ -119,7 +125,7 @@ void Brunswick::update(float delta_time)
 
     const u8* key_state = SDL_GetKeyboardState(NULL);
     
-    for (int i = 0; i < 3; ++i) 
+    for (int i = 0; i < m_number_of_interactables; ++i) 
     {
 		m_state.interactables[i].update(delta_time, m_state.player, m_state.interactables, m_number_of_interactables, m_state.map);
         if (m_state.player->check_collision(&m_state.interactables[i]) && key_state[SDL_SCANCODE_C])

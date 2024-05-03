@@ -60,7 +60,7 @@ void Home::initialise()
 	int TILESET_HEIGHT = 3456 / 32;
 
     m_state.next_scene_id = -1;
-    m_number_of_interactables = 4;
+    m_number_of_interactables = 8;
 
     // Every scene will have two maps, a background map and an object map - map rendering won't need to use tile ids, 
     // Background map will have no collsion, object map will have collision, will render background map, then object map, specify type in initialization or something
@@ -82,7 +82,7 @@ void Home::initialise()
     m_state.interactables[0].set_entity_type(INTERACTABLE);
     m_state.interactables[0].m_texture_id = Utility::load_texture("assets/sonic.png");
     m_state.interactables[0].set_position(glm::vec3(3.0f, -4.0f, 0.0f));
-    m_state.interactables[0].set_dialogue("Sonic: Hey Ashva!. Good to see you again in New Brunswick... New Jersey (not Canada!). Last night, you were telling me that that you were afraid of something bad happening but didn't tell me what. If you want to talk to your mom, Ann's outside. Feel free to explore the environment here though before you head out. PS: try to avoid any puddles/holes in the ground. ");
+    m_state.interactables[0].set_dialogue("Sonic: Hey Ashva!. Good to see you again in New Brunswick... New Jersey (not Canada!). Last night, you were telling me that that you were afraid of something bad happening but didn't tell me what. If you want to talk to your mom, Ann may be outside but I haven't seen her in a while. Feel free to explore the environment here though before you head out. PS: try to avoid staying outside for too long or going on any roads, there's a pretty bad tile storm outside.");
 
     m_state.interactables[1].set_entity_type(INTERACTABLE);
     m_state.interactables[1].set_position(glm::vec3(9.0f, -2.0f, 0.0f));
@@ -94,7 +94,23 @@ void Home::initialise()
 
     m_state.interactables[3].set_entity_type(INTERACTABLE);
     m_state.interactables[3].set_position(glm::vec3(16.0f, -6.0f, 0.0f));
-    m_state.interactables[3].set_dialogue("(Thoughts): Your collections of books - partly through a pop history book as a guilty pleasure. The shelf gives you a weird perspective on life though. All of these books chart the life stories of different notable people but none of them are here now. They were born, did some stuff, and then that's it, their lives were over, preserved only through the words of dedicated authors.");
+    m_state.interactables[3].set_dialogue("(Thoughts): Your collections of books - partly through a pop history book as a guilty pleasure. Looking through the shelf, you see the life stories of different notable politicians, businessman, activists, etc. charted, preserved only through the words of dedicated authors. It does jog your mind on what you're trying to do with your life.");
+
+    m_state.interactables[4].set_entity_type(INTERACTABLE);
+    m_state.interactables[4].set_position(glm::vec3(1.0f, -6.0f, 0.0f));
+    m_state.interactables[4].set_dialogue("(Thoughts): An old grandfather clock that is still functioning as if it were new. You can hear each large tick it makes, echoing across the room. It's as if it is trying to signal the inevitable and omniprescent");
+
+    m_state.interactables[5].set_entity_type(INTERACTABLE);
+    m_state.interactables[5].set_position(glm::vec3(14.0f, -2.0f, 0.0f));
+    m_state.interactables[5].set_dialogue("(Thoughts): A classic rustic lantern that was passed down from your dad. You've gotten on somewhat distant terms with your dad since college started; nothing negative per se, but the bond has weaked. There's a sense of nostalgia you feel though looking at the lamp; somehow reminds you of the days of long forgotten road trips");
+
+    m_state.interactables[6].set_entity_type(INTERACTABLE);
+    m_state.interactables[6].set_position(glm::vec3(5.0f, -1.2f, 0.0f));
+    m_state.interactables[6].set_dialogue("(Thoughts): Some kitchen cutlery. You don't tend to cook often though since usually you just eat out.");
+
+    m_state.interactables[7].set_entity_type(INTERACTABLE);
+    m_state.interactables[7].set_position(glm::vec3(17.0f, -2.0f, 0.0f));
+    m_state.interactables[7].set_dialogue("(Thoughts): Honestly you wouldn't mind taking a nap again especially with what's been on your mind recently and the fact that you're running on 4 hours of sleep but it's already 11:00 AM so you decide against it.");
 
     m_state.loading_zones = new Entity[1];
     m_state.loading_zones[0].set_entity_type(LOADING_ZONE);
